@@ -1,0 +1,12 @@
+Con anaconda:
+	1) Abrir consola de anaconda
+	2) ir hasta el directorio actual
+	3) set FLASK_APP=main.py
+	4) flask run --host=0.0.0.0
+
+sin anaconda:
+	1) Abrir cmd
+	2) ir hasta el directorio actual (*ruta*)
+	3) set FLASK_APP=main.py
+	4) (*ruta*)\venv\Scripts\python.exe flask run --host=0.0.0.0
+
