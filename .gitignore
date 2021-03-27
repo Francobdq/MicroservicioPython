@@ -1,1 +1,5 @@
 /sqlite_saludos.db
+/__pycache__
+/mycsv.csv
+/templates
+/venv
