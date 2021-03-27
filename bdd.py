@@ -26,12 +26,12 @@ def crear_tabla(conn, create_table_sql):
     except Error as e:
         logging.error(e)
 
-def insertar_usuario(conn, usuario):
-    sql = ''' INSERT INTO usuarios(nombre)
-              VALUES(?) '''
+def insertar_usuario(conn, usuario,dni):
+    sql = 'INSERT INTO usuarios(nombre,dni) VALUES(?,?);'
+
     logging.debug("Insertando usuario: " + usuario)
     cur = conn.cursor() 
-    cur.execute(sql, [usuario])
+    cur.executemany(sql, [(usuario,dni)])
     conn.commit()
     logging.debug("Usuario insertado!")
 
@@ -44,18 +44,36 @@ def obtener_usuarios(conn):
     
     rows = cur.fetchall()
 
-    logging.debug(str(len(rows)) + "usuarios obtenidos...")
+    logging.debug(str(len(rows)) + " usuarios obtenidos...")
 
     for row in rows:
         saludados.append(row[0])
 
     return saludados
 
+def obtener_dni(conn):
+    logging.debug("Obteniendo usuarios...")
+    cur = conn.cursor()
+    cur.execute("SELECT dni FROM usuarios")
+
+    saludados = []
+    
+    rows = cur.fetchall()
+
+    logging.debug(str(len(rows)) + " dni obtenidos...")
+
+    for row in rows:
+        saludados.append(row[0])
+
+    return saludados
+
+
 def inicializar_db():
 
     sql_crear_tabla_usuarios = """ CREATE TABLE IF NOT EXISTS usuarios (
                                         id intenger PRIMARY KEY, 
-                                        nombre text NOT NULL
+                                        nombre text NOT NULL,
+                                        dni intenger NOT NULL
                                     ); """
     conn = crear_conexion(database)
 
