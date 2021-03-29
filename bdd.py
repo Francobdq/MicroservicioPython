@@ -18,13 +18,7 @@ def crear_conexion(db_file):
 
     return conn
 
-def crear_tabla(conn, create_table_sql):
-    try:
-        logging.debug("Creando tabla en la DB...")
-        c = conn.cursor()
-        c.execute(create_table_sql)
-    except Error as e:
-        logging.error(e)
+
 
 def insertar_usuario(conn, usuario,dni):
     sql = 'INSERT INTO usuarios(nombre,dni) VALUES(?,?);'
@@ -35,50 +29,38 @@ def insertar_usuario(conn, usuario,dni):
     conn.commit()
     logging.debug("Usuario insertado!")
 
-def obtener_usuarios(conn):
+
+def obtener_dato(conn, dato):
     logging.debug("Obteniendo usuarios...")
     cur = conn.cursor()
-    cur.execute("SELECT nombre FROM usuarios")
+    cur.execute("SELECT %s FROM usuarios" % dato)
 
-    saludados = []
+    usuarios = []
     
     rows = cur.fetchall()
 
     logging.debug(str(len(rows)) + " usuarios obtenidos...")
 
     for row in rows:
-        saludados.append(row[0])
+        usuarios.append(row)
 
-    return saludados
+    return usuarios
 
-def obtener_dni(conn):
-    logging.debug("Obteniendo usuarios...")
-    cur = conn.cursor()
-    cur.execute("SELECT dni FROM usuarios")
+# Se inicializa la base de datos
+def inicializar_db():            
+    # se intenta crear la conexión      
+    conn = crear_conexion(database) 
 
-    saludados = []
-    
-    rows = cur.fetchall()
-
-    logging.debug(str(len(rows)) + " dni obtenidos...")
-
-    for row in rows:
-        saludados.append(row[0])
-
-    return saludados
-
-
-def inicializar_db():
-
-    sql_crear_tabla_usuarios = """ CREATE TABLE IF NOT EXISTS usuarios (
-                                        id intenger PRIMARY KEY, 
-                                        nombre text NOT NULL,
-                                        dni intenger NOT NULL
-                                    ); """
-    conn = crear_conexion(database)
-
-    if conn is not None:
-        crear_tabla(conn, sql_crear_tabla_usuarios)
+    if conn is not None:     
+        try:
+            logging.debug("Creando tabla en la DB...")
+            # se abre el archivo .sql con las intrucciones para generar la base de datos
+            sql_file = open("bdd_sql.sql")
+            sql_as_string = sql_file.read()
+            # luego se executa en forma de script estas instrucciones (creando así la base de datos) 
+            conn.executescript(sql_as_string)
+        except Error as e:
+            logging.error(e)
     else:
         logging.error("Error, no se puede crear la conexion:")
 
