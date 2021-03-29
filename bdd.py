@@ -21,14 +21,23 @@ def crear_conexion(db_file):
 
 
 
-def insertar_usuario(conn, usuario,dni):
-    sql = 'INSERT INTO usuarios(nombre,dni) VALUES(?,?);'
+def insertar_usuario(conn, datos):
+    sql = 'INSERT INTO usuarios(apellido, nombre, dni, email, num_telefono) VALUES(?,?,?,?,?);'
 
-    logging.debug("Insertando usuario: " + usuario)
+    logging.debug("Insertando usuario: " + datos[0] + " " + datos[1])
     cur = conn.cursor() 
-    cur.executemany(sql, [(usuario,dni)])
+    cur.executemany(sql, [datos]) #cur.executemany(sql, [(datos[0],datos[1])])
     conn.commit()
     logging.debug("Usuario insertado!")
+
+
+def insertar_aula(conn, nombre, cant_max_usuarios):
+    sql = 'INSERT INTO aulas(nombre,cant_max_usuarios) VALUES(?,?);'
+    logging.debug("Insertando aula: " + nombre)
+    cur = conn.cursor() 
+    cur.executemany(sql, [(nombre,cant_max_usuarios)])
+    conn.commit()
+    logging.debug("aula insertada!")
 
 
 def obtener_dato(conn, dato):

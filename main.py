@@ -29,16 +29,20 @@ def saludar():
             salida += "<li>" + str(usuarios[i]) +"</li>"
         return salida + "</ul>"
 
-
-
-@app.route('/insertar/<nombre>/<dni>')
-def crear_usuario(nombre,dni):
+@app.route('/insertar/usuario/<apellido>/<nombre>/<dni>/<email>/<num_telefono>')
+def crear_usuario(apellido, nombre, dni, email, num_telefono):
     conn = crear_conexion(database)
+    datos = [apellido, nombre,dni,email,num_telefono]
+    insertar_usuario(conn, datos)
     
-    insertar_usuario(conn, nombre,dni)
-    
+    return 'usuario %s creado' % nombre
 
-    return 'Hola %s' % nombre
+@app.route('/insertar/aula/<nombre>/<cant_max_usuarios>')
+def crear_aula(nombre, cant_max_usuarios):
+    conn = crear_conexion(database)
+    insertar_aula(conn, nombre, cant_max_usuarios)
+    
+    return 'aula %s creada' % nombre
 
 
 # Combina las 2 listas en un unico string para crear el csv luego
