@@ -15,23 +15,24 @@ def saludar():
     app.logger.debug('Pagina principal...')
 
     conn = crear_conexion(database)
-    nombre = obtener_usuarios(conn)
-    dni = obtener_dni(conn)
 
-    if len(nombre) == 0:
+
+    usuarios = obtener_dato(conn,"*")
+
+    if len(usuarios) == 0:
         app.logger.debug('Lista de usuarios!')
         return 'Aún no hay datos cargados'
     else:
         app.logger.debug('Mostrando lista de usuarios...')
         salida =  "Usuarios cargados:<ul>"
-        for i in range(len(nombre)):
-            salida += "<li>" + str(nombre[i]) + "  - " + str(dni[i]) +"</li>"
+        for i in range(len(usuarios)):
+            salida += "<li>" + str(usuarios[i]) +"</li>"
         return salida + "</ul>"
 
 
 
 @app.route('/insertar/<nombre>/<dni>')
-def saludar_usuario(nombre,dni):
+def crear_usuario(nombre,dni):
     conn = crear_conexion(database)
     
     insertar_usuario(conn, nombre,dni)
@@ -56,10 +57,11 @@ def download_csv():
     logging.debug("csv!")
     # Creo conexión con la bdd y obtengo todos los usuarios
     conn = crear_conexion(database)
-    nombres = obtener_usuarios(conn)
-    dni = obtener_dni(conn)
-    #csv = 'foo,bar,baz\nhai,bai,crai\n'  
-    csv = "\n" + normalizarListasCSV(nombres,dni)#list_de_lista(saludados)  #el \n es para dejar la cabecera sin nada
+
+    nombres = obtener_dato(conn, "nombre")
+    dni = obtener_dato(conn, "dni")
+
+    csv = "\n" + normalizarListasCSV(nombres,dni) #el \n es para dejar la cabecera sin nada
     response = make_response(csv)
     cd = 'attachment; filename=mycsv.csv'
     response.headers['Content-Disposition'] = cd 
