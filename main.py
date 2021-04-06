@@ -15,9 +15,7 @@ def saludar():
     app.logger.debug('Pagina principal...')
 
     conn = crear_conexion(database)
-
-
-    usuarios = obtener_dato(conn,"*")
+    usuarios = obtener_dato_usuario(conn,"*")
 
     if len(usuarios) == 0:
         app.logger.debug('Lista de usuarios!')
@@ -29,10 +27,10 @@ def saludar():
             salida += "<li>" + str(usuarios[i]) +"</li>"
         return salida + "</ul>"
 
-@app.route('/insertar/usuario/<apellido>/<nombre>/<dni>/<email>/<num_telefono>')
-def crear_usuario(apellido, nombre, dni, email, num_telefono):
+@app.route('/insertar/usuario/<apellido>/<nombre>/<dni>/<email>')
+def crear_usuario(apellido, nombre, dni, email):
     conn = crear_conexion(database)
-    datos = [apellido, nombre,dni,email,num_telefono]
+    datos = [apellido, nombre,dni,email]
     insertar_usuario(conn, datos)
     
     return 'usuario %s creado' % nombre
@@ -54,6 +52,31 @@ def normalizarListasCSV(lista, lista1):
 
     return total
 
+def normalizarListaCSV(lista):
+    total = ""
+    for i in range(len(lista)):
+        string = str(lista[i])
+        total += string + "\n"
+
+    return total
+
+
+@app.route('/aulas/csv')  
+def download_csv_aulas():  
+    logging.debug("aulas csv!")
+    # Creo conexión con la bdd y obtengo todos los usuarios
+    conn = crear_conexion(database)
+
+    nombres = obtener_dato_aula(conn, "nombre")
+    cant_max_usuarios = obtener_dato_aula(conn, "cant_max_usuarios")
+
+    csv = "\n" + normalizarListasCSV(nombres,cant_max_usuarios) #el \n es para dejar la cabecera sin nada
+    response = make_response(csv)
+    cd = 'attachment; filename=aulascsv.csv'
+    response.headers['Content-Disposition'] = cd 
+    response.mimetype='text/csv'
+
+    return response
 
 
 @app.route('/csv/')  
@@ -62,12 +85,14 @@ def download_csv():
     # Creo conexión con la bdd y obtengo todos los usuarios
     conn = crear_conexion(database)
 
-    nombres = obtener_dato(conn, "nombre")
-    dni = obtener_dato(conn, "dni")
+    
+    nombres = obtener_dato_usuario(conn, "*")
 
-    csv = "\n" + normalizarListasCSV(nombres,dni) #el \n es para dejar la cabecera sin nada
+    logging.debug(nombres)
+
+    csv = "\n" + normalizarListaCSV(nombres)
     response = make_response(csv)
-    cd = 'attachment; filename=mycsv.csv'
+    cd = 'attachment; filename=usuarioscsv.csv'
     response.headers['Content-Disposition'] = cd 
     response.mimetype='text/csv'
 

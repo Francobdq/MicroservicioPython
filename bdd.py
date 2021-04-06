@@ -7,6 +7,57 @@ from sqlite3 import Error
 nombreSQLSCRIPT = "bdd_sql.sql"
 database = os.getcwd() + "\\sqlite_saludos.db"
 
+
+# --------------------- INSERTAR DATOS --------------------- 
+
+def insertar_en_tabla(conn, sql, datos):
+    cur = conn.cursor() 
+    cur.executemany(sql, [datos]) #cur.executemany(sql, [(datos[0],datos[1])])
+    conn.commit()
+    
+def insertar_usuario(conn, datos):
+    sql = 'INSERT INTO usuarios(apellido, nombre, dni, email) VALUES(?,?,?,?);'
+    logging.debug("Insertando usuario: " + datos[0] + " " + datos[1])
+    insertar_en_tabla(conn, sql, datos)
+    logging.debug("Usuario insertado!")
+
+def insertar_aula(conn, nombre, cant_max_usuarios):
+    sql = 'INSERT INTO aulas(nombre,cant_max_usuarios) VALUES(?,?);'
+    logging.debug("Insertando aula: " + nombre)
+    insertar_en_tabla(conn, sql, (nombre,cant_max_usuarios))
+    logging.debug("aula insertada!")
+
+
+# --------------------- OBTENER DATOS --------------------- 
+
+
+def obtener_dato_tabla(cur):
+    datos = []
+    rows = cur.fetchall()
+    for row in rows:
+        datos.append(row)
+
+    return datos
+
+def obtener_dato_aula(conn, dato):
+    logging.debug("Obteniendo aula...")
+    cur = conn.cursor()
+    cur.execute("SELECT %s FROM aulas" % dato)
+
+    return obtener_dato_tabla(cur)
+    
+
+def obtener_dato_usuario(conn, dato):
+    logging.debug("Obteniendo usuarios...")
+    cur = conn.cursor()
+    cur.execute("SELECT %s FROM usuarios" % dato)
+
+    return obtener_dato_tabla(cur)
+
+
+# --------------------- INICIALIZAR --------------------- 
+
+
 def crear_conexion(db_file):
 
     conn = None
@@ -20,41 +71,6 @@ def crear_conexion(db_file):
     return conn
 
 
-
-def insertar_usuario(conn, datos):
-    sql = 'INSERT INTO usuarios(apellido, nombre, dni, email, num_telefono) VALUES(?,?,?,?,?);'
-
-    logging.debug("Insertando usuario: " + datos[0] + " " + datos[1])
-    cur = conn.cursor() 
-    cur.executemany(sql, [datos]) #cur.executemany(sql, [(datos[0],datos[1])])
-    conn.commit()
-    logging.debug("Usuario insertado!")
-
-
-def insertar_aula(conn, nombre, cant_max_usuarios):
-    sql = 'INSERT INTO aulas(nombre,cant_max_usuarios) VALUES(?,?);'
-    logging.debug("Insertando aula: " + nombre)
-    cur = conn.cursor() 
-    cur.executemany(sql, [(nombre,cant_max_usuarios)])
-    conn.commit()
-    logging.debug("aula insertada!")
-
-
-def obtener_dato(conn, dato):
-    logging.debug("Obteniendo usuarios...")
-    cur = conn.cursor()
-    cur.execute("SELECT %s FROM usuarios" % dato)
-
-    usuarios = []
-    
-    rows = cur.fetchall()
-
-    logging.debug(str(len(rows)) + " usuarios obtenidos...")
-
-    for row in rows:
-        usuarios.append(row)
-
-    return usuarios
 
 # Se inicializa la base de datos
 def inicializar_db():          

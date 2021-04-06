@@ -1,19 +1,3 @@
-/*
-CREATE TABLE IF NOT EXISTS usuarios (
-    id intenger PRIMARY KEY, 
-    nombre text NOT NULL,
-    dni intenger NOT NULL
-    /*
-    id intenger PRIMARY KEY,
-    apellido text NOT NULL,
-    nombre text NOT NULL,
-    dni intenger NOT NULL,
-    email boolean NOT NULL,
-    num_telefono intenger
-    
-);
-*/
-
 CREATE TABLE aulas (
     id_aulas INTEGER PRIMARY KEY,
     nombre VARCHAR NOT NULL,
@@ -29,8 +13,7 @@ CREATE TABLE usuarios (
     apellido VARCHAR NOT NULL,
     nombre VARCHAR NOT NULL,
     dni INTEGER NOT NULL,
-    email VARCHAR,
-    num_telefono INTEGER
+    email VARCHAR
 );
 
 
